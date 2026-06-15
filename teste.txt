@@ -1,0 +1,38 @@
+// Esse é pra você Matheus.
+
+Arquivos e Programas/Firefox
+Arquivos e Programas/Chrome
+Arquivos e Programas/Opera
+Meus Documentos/apresentacao.ppt
+Meus Documentos/relatorio.doc
+Meus Documentos/fontes
+Meus Documentos/fontes/main.c
+Meus Documentos/fontes/main.h
+Meus Documentos/imagens
+Meus Downloads/7zip.exe
+Meus Downloads/t2.rar
+
+// Dica pra você
+/*
+O objetivo do trabalho é simular um sistema de arquivos usando uma árvore em memória.
+
+Enquanto eu vo fazer a estrutura capaz de armazenar a arvore vc vai ler construir uma árvore que representa faz:
+
+Raiz
+├── Arquivos e Programas
+│   ├── Firefox
+│   ├── Chrome
+│   └── Opera
+│
+├── Meus Documentos
+│   ├── apresentacao.ppt
+│   ├── relatorio.doc
+│   ├── fontes
+│   │   ├── main.c
+│   │   └── main.h
+│   └── imagens
+│
+└── Meus Downloads
+    ├── 7zip.exe
+    └── t2.rar
+*/
