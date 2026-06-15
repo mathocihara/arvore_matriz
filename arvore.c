@@ -60,6 +60,7 @@ void inserirFilho(No *pai, No *filho){
     atual->proximoIrmao = filho;
 }
 
+// Detalhe o remover ela não da o free() não, então se querem remover e apagar chamem os dois remover e liberar.
 void removerFilho(No *pai, No *filho){
 
     if(pai == NULL || filho == NULL){

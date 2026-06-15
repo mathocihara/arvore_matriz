@@ -12,27 +12,31 @@ Meus Documentos/imagens
 Meus Downloads/7zip.exe
 Meus Downloads/t2.rar
 
-// Dica pra você
 /*
-O objetivo do trabalho é simular um sistema de arquivos usando uma árvore em memória.
+O objetivo do trabalho é simular um sistema de arquivos usando árvore.
 
-Enquanto eu vo fazer a estrutura capaz de armazenar a arvore vc vai ler construir uma árvore que representa faz:
+Enquanto eu vou fazer estrutra da arvore (criar nó, inserir filho, buscar filho, remover filho etc), a sua parte é ler o arquivo e construir a árvore usando essas minahs funções.
+
+a arvore vai ficar tipo isso aqui:
 
 Raiz
-├── Arquivos e Programas
-│   ├── Firefox
-│   ├── Chrome
-│   └── Opera
-│
-├── Meus Documentos
-│   ├── apresentacao.ppt
-│   ├── relatorio.doc
-│   ├── fontes
-│   │   ├── main.c
-│   │   └── main.h
-│   └── imagens
-│
-└── Meus Downloads
-    ├── 7zip.exe
-    └── t2.rar
+    Arquivos e Programas
+        Firefox
+        Chrome
+        Opera
+    Meus Documentos
+        apresentacao.ppt
+        relatorio.doc
+        fontes
+            main.c
+            main.h  
+        imagens
+    Meus Downloads
+        7zip.exe
+        t2.rar
+
+lembrando que tem que usar o '/' 
+se tiver na arvore continua se nãio vai ter que criar o no e inserir.
+
+tem umas funções na suaparte tambem.
 */
