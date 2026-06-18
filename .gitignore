@@ -21,3 +21,24 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+### C ###
+# Executáveis
+*.exe
+*.out
+*.app
+
+# Arquivos objeto
+*.o
+*.obj
+
+# Arquivos compilados
+*.a
+*.lib
+*.so
+*.dll
+
+# Arquivos de debug
+*.dSYM/
+*.su
+*.gch
