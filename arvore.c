@@ -112,6 +112,107 @@ No* buscarFilho(No *pai, char *nome){
     return NULL;
 }
 
+void carregarArquivo(No *raiz, char *arquivo){
+
+    FILE *fp = fopen(arquivo, "r");
+
+    if(fp == NULL){
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    char linha[256];
+
+    while(fgets(linha, sizeof(linha), fp) != NULL){
+
+        // remover \n
+        linha[strcspn(linha, "\n")] = '\0';
+
+        processarLinha(raiz, linha);
+    }
+
+    fclose(fp);
+}
+
+void processarLinha(No *raiz, char *linha){
+
+    char *token = strtok(linha, "/");
+
+    No *atual = raiz;
+
+    while(token != NULL){
+
+        No *encontrado = buscarFilho(atual, token);
+
+        // se não existe, cria
+        if(encontrado == NULL){
+
+            int ehArquivo = (strchr(token, '.') != NULL);
+
+            No *novo = criarNo(token, ehArquivo);
+
+            inserirFilho(atual, novo);
+
+            atual = novo;
+        }
+        else{
+            atual = encontrado;
+        }
+
+        token = strtok(NULL, "/");
+    }
+}
+
+void comandoSearch(No *raiz, char *nome){
+
+    printf("Buscando por: %s\n", nome);
+
+    buscarRecursivo(raiz, nome);
+}
+
+void buscarRecursivo(No *atual, char *nome){
+
+    if(atual == NULL){
+        return;
+    }
+
+    if(strcmp(atual->nome, nome) == 0){
+        printf("Encontrado: %s\n", atual->nome);
+    }
+
+    No *filho = atual->primeiroFilho;
+
+    while(filho != NULL){
+        buscarRecursivo(filho, nome);
+        filho = filho->proximoIrmao;
+    }
+}
+
+void comandoList(No *atual){
+
+    if(atual == NULL){
+        return;
+    }
+
+    No *filho = atual->primeiroFilho;
+
+    if(filho == NULL){
+        printf("Diretorio vazio\n");
+        return;
+    }
+
+    while(filho != NULL){
+
+        if(filho->ehUmArquivo)
+            printf("[ARQ] %s\n", filho->nome);
+        else
+            printf("[DIR] %s\n", filho->nome);
+
+        filho = filho->proximoIrmao;
+    }
+}
+
+
 void liberarNo(No *no){
 
     // chegou no final?
@@ -143,3 +244,4 @@ void liberarArvore(No *raiz){
 
     liberarNo(raiz);
 }
+
