@@ -1,5 +1,5 @@
-docs/trabalho.pdf
-docs/fotos/img1.png
-docs/fotos/img2.png
-musicas/rock.mp3
-videos/aula.mp4
+Documentos/img1.png
+Documentos/img2.png
+Downloads/setup.exe
+Videos/aula.mp4
+Musicas/rock.mp3
