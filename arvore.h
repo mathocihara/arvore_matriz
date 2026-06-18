@@ -33,6 +33,11 @@ No* criarNo(char *nome, int ehUmArquivo);
 void inserirFilho(No *pai, No *filho);
 No* buscarFilho(No *pai, char *nome);
 void removerFilho(No *pai, No *filho);
+void carregarArquivo(No *raiz, char *arquivo);
+void processarLinha(No *raiz, char *linha);
+void comandoSearch(No *raiz, char *nome);
+void buscarRecursivo(No *atual, char *nome);
+void comandoList(No *atual);
 void liberarNo(No *no);
 void liberarArvore(No *raiz);
 
