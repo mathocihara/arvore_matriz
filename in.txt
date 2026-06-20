@@ -1,0 +1,5 @@
+Documentos/img1.png
+Documentos/img2.png
+Downloads/setup.exe
+Videos/aula.mp4
+Musicas/rock.mp3

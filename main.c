@@ -21,6 +21,22 @@ int main(){
         printf("Encontrou: %s\n", teste->nome);
     }
 
+    
+    
+    carregarArquivo(raiz, "in.txt");
+
+    printf("\nRaiz:\n");
+    comandoList(raiz);
+
+    printf("\nDocumentos:\n");
+    comandoList(documentos);
+
+    printf("\nDownloads:\n");
+    comandoList(downloads);
+
+    printf("\nBusca:\n");
+    comandoSearch(raiz, "img1.png");
+    
     liberarArvore(raiz);
 
     return 0;
