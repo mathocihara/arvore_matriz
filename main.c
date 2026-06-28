@@ -9,35 +9,17 @@ gcc main.c arvore.c -o programa
 int main(){
 
     No *raiz = criarNo("Raiz", 0);
+    char *comando = (char*) malloc(TAMANHO_COMANDO * sizeof(char));
 
-    No *documentos = criarNo("Documentos", 0);
-    No *downloads = criarNo("Downloads", 0);
-    inserirFilho(raiz, documentos);
-    inserirFilho(raiz, downloads);
+    carregarArquivo(raiz, "in.txt");
+    comandoHelp(); // Mostrar a ajuda no começo do programa
 
-    No *teste = buscarFilho(raiz, "Downloads");
-
-    if(teste != NULL){
-        printf("Encontrou: %s\n", teste->nome);
+    while (strcmp(comando, "exit") != 0) {
+        printf("Thiago@projeto> ");
+        scanf(" %[^\n]", comando);
+        executarComandos(&raiz, comando, TAMANHO_COMANDO);
     }
 
-    
-    
-    carregarArquivo(raiz, "in.txt");
-
-    printf("\nRaiz:\n");
-    comandoList(raiz);
-
-    printf("\nDocumentos:\n");
-    comandoList(documentos);
-
-    printf("\nDownloads:\n");
-    comandoList(downloads);
-
-    printf("\nBusca:\n");
-    comandoSearch(raiz, "img1.png");
-    
     liberarArvore(raiz);
-
     return 0;
 }
