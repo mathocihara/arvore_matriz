@@ -1,4 +1,6 @@
 #include "arvore.h"
+#include <stdio.h>
+#include <string.h>
 
 int arvoreVazia(No *raiz)
 {
@@ -41,7 +43,6 @@ void inserirFilho(No *pai, No *filho){
 
     // guardar quem é o pai do filho
     filho->pai = pai;
-
     // se não existe filho ainda esse vira o primeiro
     if(pai->primeiroFilho == NULL){
 
@@ -92,7 +93,6 @@ void removerFilho(No *pai, No *filho){
 }
 
 No* buscarFilho(No *pai, char *nome){
-
     // pai existe?
     if(pai == NULL){
         return NULL;
@@ -163,36 +163,267 @@ void processarLinha(No *raiz, char *linha){
     }
 }
 
+void caminhoNo(No* raiz) {
+    if (raiz == NULL) {
+        return;
+    }
+    caminhoNo(raiz -> pai);
+    if (raiz -> pai != NULL) { // Precisamos disso pois o nome da raiz é 'Raiz', daí fica estranho
+        printf("%s/", raiz -> nome);
+    } else {
+        printf("/");
+    }
+}
+
+
+// É um genérico para a criação de pastas (Comando 'mkdir') e arquivos (Comando 'touch')
+void comandoCriarNo(No**raiz, int ehArquivo) {
+    char* argumento = strtok(NULL, "");
+
+    if (argumento == NULL) {
+        return;
+    }
+    char* caminho = (char*) malloc(TAMANHO_COMANDO * sizeof(char));
+    char* nomeArquivo = strrchr(argumento, '/');
+    No* destino = *raiz;
+
+    if (nomeArquivo == NULL) {
+        nomeArquivo = argumento; // Caso for só o nome sem o endereço
+    } else {
+        nomeArquivo += 1;
+        strncpy(caminho, argumento, nomeArquivo - argumento);  // Copiar todo o taminho menos a última barra
+        caminho[nomeArquivo - argumento] = '\0'; // Adicionar fim da string para não ler o lixo do malloc
+        destino = navegarEndereco(raiz, caminho);
+        if (destino == NULL) {
+            free(caminho);
+            return;
+        }
+    }
+
+    No* novoNo = criarNo(nomeArquivo, ehArquivo);
+    inserirFilho(destino, novoNo);
+    free(caminho);
+}
+
 void comandoSearch(No *raiz, char *nome){
+    No* resultado = buscarRecursivo(raiz, nome);
 
-    printf("Buscando por: %s\n", nome);
+    if (resultado == NULL) {
+        printf("Nao encontrado\n");
+        return;
+    };
 
-    buscarRecursivo(raiz, nome);
+    printf("Encontrado: ");
+    caminhoNo(resultado);
+    printf("\n");
 }
 
-void buscarRecursivo(No *atual, char *nome){
-
-if(arvoreVazia(atual)){
-    return;
+void comandoClear() {
+    system("cls"); // Windows
+    system("clear"); // Linux
 }
+
+void comandoHelp() {
+    printf("--------------- Ajuda ---------------\n");
+    printf("* cd - Entrar em uma pasta\n");
+    printf("* search - Busca uma pasta ou arquivo\n");
+    printf("* rm - Remover uma pasta\n");
+    printf("* list - Lista os componentes dentro de uma pasta em questão\n");
+    printf("* mkdir - Cria uma nova pasta\n");
+    printf("* touch - Cria um novo arquivo\n");
+    printf("* pwd - Mostra a localização atual\n");
+    printf("* whoami - Mostra seu usuario no sistema\n");
+    printf("* clear - Limpa o conteúdo da tela\n");
+    printf("* help - Exibe a relação completa dos commandos\n");
+    printf("* exit - Fechar o programa\n");
+    printf("-------------------------------------\n");
+}
+
+// Busca todos os filhos parecidos com a consulta princial
+No** buscarFilhosSimilares(No* raiz, char* consulta) {
+    // Poderiamos usar uma lista linkada, mas seria muito complicado
+    No** similares = (No**) malloc(TAMANHO_BUSCA * sizeof(No*));
+    int contadorSimilares = 0;
+    int tamanhoConsulta;
+
+    for (int i=0; i < TAMANHO_COMANDO; i++) {
+        if (consulta[i] == '\0') {
+            tamanhoConsulta = i;
+            break;
+        }
+    }
+
+    for (int i=0; i < TAMANHO_BUSCA; i++) {
+        similares[i] = NULL;
+    }
+
+
+    No* filho = raiz -> primeiroFilho;
+    while (filho != NULL && contadorSimilares < TAMANHO_BUSCA) {
+        if (filho == NULL) {
+            break;
+        }
+
+        int similar = 1;
+        for (int j=0; j < tamanhoConsulta; j++) {
+            if (filho -> nome[j] != consulta[j]) {
+                similar = 0;
+            }
+        }
+
+        if (similar == 1) {
+            similares[contadorSimilares] = filho;
+            contadorSimilares++;
+        }
+        filho = filho -> proximoIrmao;
+    }
+
+    return similares;
+}
+
+// Mostra os nós similares na tela
+void mostrarSimilares(No **raiz, char* argumento) {
+    int existemSimilares = 0;
+    No** similares = buscarFilhosSimilares(*raiz, argumento);
+    for (int i=0; i < TAMANHO_BUSCA; i++) {
+        if (similares[i] != NULL) {
+            existemSimilares = 1;
+        }
+    }
+    if (existemSimilares == 1) {
+        printf("Pastas similares: \n");
+    }
+    for (int i=0; i < TAMANHO_BUSCA; i++) {
+        if (similares[i] != NULL) {
+            printf(" - %s\n", similares[i] -> nome);
+        }
+    }
+}
+
+// Retorna o nó de certo endereço baseado no caminho (Ex.: /pasta1/pasta2/)
+No* navegarEndereco(No** raiz, char* caminho) {
+    // Caso começar com '/' vamos fazer ele ser absoluto
+    if (caminho != NULL && caminho[0] == '/') {
+        while ((*raiz) -> pai != NULL) {
+            raiz = &((*raiz) -> pai);
+        }
+        caminho += 1; //Pulamos o /
+    }
+
+    char* argumento = strtok(caminho, "/");
+    if (argumento == NULL) {// Caso for nulo, verificamos se o argumento está em barra
+        argumento = strtok(caminho, "");
+    }
+
+    while(caminho != NULL && strcmp(caminho, "") != 0) {
+        if (strcmp(caminho, "..") == 0) {
+            if ((*raiz) -> pai != NULL) {
+                raiz = &((*raiz) -> pai);
+            }
+        }else if (caminho != NULL) {
+            No *filho = buscarFilho(*raiz, caminho);
+            if (filho != NULL) {
+                raiz = &filho;
+            } else {
+                printf("Diretório não encontrado\n");
+                mostrarSimilares(raiz, caminho);
+                return NULL;
+            }
+        }
+
+        caminho = strtok(NULL, "/");
+    }
+    return *raiz;
+}
+
+// Ativa os comandos apartir da input do usuário, passando a raiz como contexto
+void executarComandos(No** raiz, char* comando, int sizeComando) {
+    // Precisamos de um ponteiro de ponteiro para conseguir alterar o valor da raiz global
+    char* token = strtok(comando, " ");
+
+    // Coloquei ls para deixar mais fácil digitar
+    if (strcmp(token, "list") == 0 || strcmp(token, "ls") == 0) {
+        char* argumento = strtok(NULL, "");
+        No* destino = navegarEndereco(raiz, argumento);
+        if (destino != NULL) {
+            comandoList(destino);
+        }
+    } else if (strcmp(token, "search") == 0) {
+        char* argumento = strtok(NULL, "");
+        if (argumento == NULL) {
+            return;
+        }
+        comandoSearch(*raiz, argumento);
+    } else if (strcmp(token, "cd") == 0) {
+        char* argumento = strtok(NULL, "");
+        No* destino = navegarEndereco(raiz, argumento);
+        if (destino != NULL) {
+            *raiz = destino;
+        }
+    } else if (strcmp(token, "rm") == 0) {
+        char* argumento = strtok(NULL, "");
+        if (argumento == NULL) {
+            return;
+        }
+
+        if (strcmp(argumento, "../") == 0 || strcmp(argumento, "/") == 0) { // Nem pensa nisso
+            printf("Eh serio?\n");
+            return;
+        }
+
+        No* destino = navegarEndereco(raiz, argumento);
+        if (destino != NULL) {
+            removerFilho(destino -> pai, destino);
+            liberarNo(destino);
+        }
+    } else if (strcmp(token, "mkdir") == 0) {
+        comandoCriarNo(raiz, 0);
+    } else if (strcmp(token, "touch") == 0) {
+        comandoCriarNo(raiz, 1);
+    } else if (strcmp(token, "help") == 0) {
+        comandoHelp();
+    } else if (strcmp(token, "clear") == 0) {
+        comandoClear();
+    } else if (strcmp(token, "pwd") == 0) {
+        caminhoNo(*raiz);
+        printf("\n");
+    } else if (strcmp(token, "whoami") == 0) {
+        printf("O melhor professor do mundo! S2\n");
+    } else if (strcmp(token, "exit") == 0) {
+        // Não precisamos fazer nada pois isso vai parar o while que chama essa função
+    } else {
+        printf("Comando nao encontrado\n");
+    }
+}
+
+// Retorna o filho baseado no nome
+No* buscarRecursivo(No *atual, char *nome){
+    if(atual == NULL){
+        return NULL;
+    }
 
     if(strcmp(atual->nome, nome) == 0){
-        printf("Encontrado: %s\n", atual->nome);
+        return atual;
     }
 
     No *filho = atual->primeiroFilho;
 
     while(filho != NULL){
-        buscarRecursivo(filho, nome);
+        No* resultado = buscarRecursivo(filho, nome);
+        if (resultado != NULL) {
+            return resultado;
+        }
         filho = filho->proximoIrmao;
     }
+    return NULL;
 }
 
 void comandoList(No *atual){
 
-if(arvoreVazia(atual)){
-    return;
-}
+    if(atual == NULL){
+        return;
+    }
+
     No *filho = atual->primeiroFilho;
 
     if(filho == NULL){
@@ -243,4 +474,3 @@ void liberarArvore(No *raiz){
 
     liberarNo(raiz);
 }
-
