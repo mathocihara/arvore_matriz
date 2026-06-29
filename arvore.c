@@ -175,7 +175,9 @@ void caminhoNo(No* raiz) {
     }
 }
 
-void comandoMkdir(No**raiz, int ehArquivo) {
+
+// É um genérico para a criação de pastas (Comando 'mkdir') e arquivos (Comando 'touch')
+void comandoCriarNo(No**raiz, int ehArquivo) {
     char* argumento = strtok(NULL, "");
 
     if (argumento == NULL) {
@@ -237,7 +239,8 @@ void comandoHelp() {
     printf("-------------------------------------\n");
 }
 
-No** pesquisarFilhos(No* raiz, char* consulta) {
+// Busca todos os filhos parecidos com a consulta princial
+No** buscarFilhosSimilares(No* raiz, char* consulta) {
     // Poderiamos usar uma lista linkada, mas seria muito complicado
     No** similares = (No**) malloc(TAMANHO_BUSCA * sizeof(No*));
     int contadorSimilares = 0;
@@ -278,9 +281,10 @@ No** pesquisarFilhos(No* raiz, char* consulta) {
     return similares;
 }
 
+// Mostra os nós similares na tela
 void mostrarSimilares(No **raiz, char* argumento) {
     int existemSimilares = 0;
-    No** similares = pesquisarFilhos(*raiz, argumento);
+    No** similares = buscarFilhosSimilares(*raiz, argumento);
     for (int i=0; i < TAMANHO_BUSCA; i++) {
         if (similares[i] != NULL) {
             existemSimilares = 1;
@@ -296,6 +300,7 @@ void mostrarSimilares(No **raiz, char* argumento) {
     }
 }
 
+// Retorna o nó de certo endereço baseado no caminho (Ex.: /pasta1/pasta2/)
 No* navegarEndereco(No** raiz, char* caminho) {
     // Caso começar com '/' vamos fazer ele ser absoluto
     if (caminho != NULL && caminho[0] == '/') {
@@ -331,8 +336,9 @@ No* navegarEndereco(No** raiz, char* caminho) {
     return *raiz;
 }
 
-// Precisamos de um ponteiro de ponteiro para conseguir alterar o valor da raiz global
+// Ativa os comandos apartir da input do usuário, passando a raiz como contexto
 void executarComandos(No** raiz, char* comando, int sizeComando) {
+    // Precisamos de um ponteiro de ponteiro para conseguir alterar o valor da raiz global
     char* token = strtok(comando, " ");
 
     // Coloquei ls para deixar mais fácil digitar
@@ -371,9 +377,9 @@ void executarComandos(No** raiz, char* comando, int sizeComando) {
             liberarNo(destino);
         }
     } else if (strcmp(token, "mkdir") == 0) {
-        comandoMkdir(raiz, 0);
+        comandoCriarNo(raiz, 0);
     } else if (strcmp(token, "touch") == 0) {
-        comandoMkdir(raiz, 1);
+        comandoCriarNo(raiz, 1);
     } else if (strcmp(token, "help") == 0) {
         comandoHelp();
     } else if (strcmp(token, "clear") == 0) {
@@ -390,6 +396,7 @@ void executarComandos(No** raiz, char* comando, int sizeComando) {
     }
 }
 
+// Retorna o filho baseado no nome
 No* buscarRecursivo(No *atual, char *nome){
     if(atual == NULL){
         return NULL;
