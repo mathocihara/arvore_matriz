@@ -172,9 +172,9 @@ void comandoSearch(No *raiz, char *nome){
 
 void buscarRecursivo(No *atual, char *nome){
 
-    if(atual == NULL){
-        return;
-    }
+if(arvoreVazia(atual)){
+    return;
+}
 
     if(strcmp(atual->nome, nome) == 0){
         printf("Encontrado: %s\n", atual->nome);
@@ -190,10 +190,9 @@ void buscarRecursivo(No *atual, char *nome){
 
 void comandoList(No *atual){
 
-    if(atual == NULL){
-        return;
-    }
-
+if(arvoreVazia(atual)){
+    return;
+}
     No *filho = atual->primeiroFilho;
 
     if(filho == NULL){
